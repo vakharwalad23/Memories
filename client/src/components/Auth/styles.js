@@ -2,7 +2,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export default makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(4),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -22,9 +23,10 @@ export default makeStyles((theme) => ({
     marginTop: theme.spacing(3),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(1, 0, 2),
   },
   googleButton: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(2),
   },
 }));
