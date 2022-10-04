@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Avatar, Button, Paper, Grid, Typography, Container, TextField, Icon } from '@material-ui/core';
 import { GoogleLogin } from 'react-google-login';
-
+import { gapi } from 'gapi-script';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import GoogleIcon from './icon';
 import LockOutLinedIcon from '@material-ui/icons/LockOutlined';
 import useStyles from './styles';
@@ -9,6 +11,9 @@ import Input from './input';
 
 const Auth = () => {
     const classes = useStyles();
+    const clientId = "956750544835-3ngn61m5uqr1lbri7m8ola5hoo81tj24.apps.googleusercontent.com";
+    const dispatch = useDispatch();
+    const history = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
     const [isSignup, setIsSignup] = useState(false);
@@ -28,12 +33,30 @@ const Auth = () => {
     };
 
     const googleSuccess = async (res) => {
-        console.log(res);
+        const result = res?.profileObj;
+        const token = res?.tokenId;
+
+        try {
+            dispatch({ type: 'AUTH', data: { result, token } });
+
+            history('/');
+        } catch (error) {
+            console.log(error);
+        }
     };
     const googleFailure = (error) => {
         console.log(error);
         console.log("Google Sign In was unsuccessful. Try again later");
     };
+    useEffect(() => {
+        const initClient = () => {
+              gapi.client.init({
+              clientId: clientId,
+              scope: 'email'
+            });
+         };
+         gapi.load('client:auth2', initClient);
+     },[]);
 
     return (
         <Container component="main" maxWidth="xs">
@@ -59,7 +82,7 @@ const Auth = () => {
                         {isSignup ? 'Sign Up' : 'Sign In'}
                     </Button>
                     <GoogleLogin
-                        clientId="956750544835-3ngn61m5uqr1lbri7m8ola5hoo81tj24.apps.googleusercontent.com"
+                        clientId={clientId}
                         render={(renderProps) => (
                             <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={renderProps.disabled} startIcon={<GoogleIcon />} variant="contained">Sign In with Google</Button>
                         )}
