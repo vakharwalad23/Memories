@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Avatar, Button } from '@material-ui/core';
-
+import decode from 'jwt-decode'
 import { useDispatch } from 'react-redux';
 import useStyles from './styles';
 import memories from '../../images/memories.png';
@@ -16,8 +16,8 @@ const Navbar = () => {
 
     const logout = () => {
         dispatch({ type: 'LOGOUT' });
-
-        history('/');
+        history('/auth');
+        // window.location.reload();
 
         setUser(null);
     };
@@ -25,7 +25,14 @@ const Navbar = () => {
     useEffect(()=> {
         const token = user?.token;
 
-        //JWT...
+        //JWT
+        if(token){
+            const decodedToken = decode(token);
+
+            if(decodedToken.exp * 1000 < new Date().getTime()){
+                logout();
+            }
+        }
 
         setUser(JSON.parse(localStorage.getItem('profile')));
     }, [location]);
